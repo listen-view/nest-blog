@@ -28,8 +28,8 @@ export class PostsController {
   }
 
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Query('tag') tag) {
+    return this.postsService.findAll(tag);
   }
 
   @Get('detail')

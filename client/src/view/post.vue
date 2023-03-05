@@ -1,11 +1,29 @@
 <template>
   <div class="form-box">
-    <el-form>
+    <el-form label-width="80">
       <el-form-item label="author">
         <el-input v-model:model-value="formData.author" />
       </el-form-item>
       <el-form-item label="title">
         <el-input v-model:model-value="formData.title" />
+      </el-form-item>
+      <el-form-item label="tag">
+        <el-select
+          v-model="formData.tags"
+          multiple
+          filterable
+          allow-create
+          default-first-option
+          :reserve-keyword="false"
+          placeholder="Choose tags for your article"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="">
         <div style="border: 1px solid #ccc">
@@ -36,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive,shallowRef,ref} from "vue";
+import {reactive, shallowRef, ref, onMounted} from "vue";
 import {Toolbar,Editor} from '@wangeditor/editor-for-vue'
 import '@wangeditor/editor/dist/css/style.css'
 import http from "../http";
@@ -46,17 +64,26 @@ const formData = reactive({
   author:'',
   Content: '',
   title: '',
+  tags:[]
 })
+const router = useRouter()
+const options = ref([])
 // 编辑器实例，必须用 shallowRef
 const editorRef = shallowRef()
 
 // 内容 HTML
 const valueHtml = ref('<p></p>')
 
+onMounted(()=>{
+  http.get('/api/tag').then(res=>{
+    if(res.data){
+      options.value = res.data
+    }
+  })
+})
 const handleCreated = (editor:any) => {
   editorRef.value = editor // 记录 editor 实例，重要！
 }
-const router = useRouter()
 
 const postForm = ()=>{
   if(!valueHtml.value)return

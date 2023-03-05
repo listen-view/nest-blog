@@ -5,11 +5,13 @@ import { Post } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
+import { TagService } from '../tag/tag.service';
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    private readonly tagService: TagService,
     private readonly userService: UserService,
   ) {}
 
@@ -20,13 +22,23 @@ export class PostsService {
       where: { title: createPost.title },
     });
     if (exist) throw new HttpException('已存在该文章', HttpStatus.BAD_REQUEST);
+    const existTags = await this.tagService.create(createPost.tags);
     const temp = await this.postRepository.create(createPost);
     temp.user = user;
+    temp.tag = existTags;
     return await this.postRepository.save(temp);
   }
 
-  async findAll() {
-    return await this.postRepository.find();
+  async findAll(tag) {
+    const query = await this.postRepository.createQueryBuilder('post');
+    if (tag) {
+      query
+        .leftJoinAndSelect('post.tag', 'tag')
+        .where('tag.content = :tag', { tag });
+    } else {
+      query.leftJoinAndSelect('post.tag', 'tag');
+    }
+    return await query.getMany();
   }
 
   async findOne(id) {

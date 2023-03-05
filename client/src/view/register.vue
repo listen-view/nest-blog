@@ -2,20 +2,40 @@
   <p>register center</p>
   <div class="register-box">
     <el-form label-width="120">
-      <el-form-item label="username">
-        <el-input v-model:model-value="formData.userName"></el-input>
+      <el-form-item
+        required
+        label="username"
+      >
+        <el-input v-model:model-value="formData.userName" />
       </el-form-item>
-      <el-form-item label="nickName">
-        <el-input v-model:model-value="formData.nickName"></el-input>
+      <el-form-item
+        required
+        label="nickName"
+      >
+        <el-input v-model:model-value="formData.nickName" />
       </el-form-item>
-      <el-form-item label="password">
-        <el-input type="password" v-model:model-value="formData.password"></el-input>
+      <el-form-item
+        required
+        label="password"
+      >
+        <el-input
+          v-model:model-value="formData.password"
+          type="password"
+        />
       </el-form-item>
-      <el-form-item label="email">
-        <el-input v-model:model-value="formData.email"></el-input>
+      <el-form-item
+        required
+        label="email"
+      >
+        <el-input v-model:model-value="formData.email" />
       </el-form-item>
       <el-form-item>
-        <el-button @click="submit">submit</el-button>
+        <el-button
+          type="primary"
+          @click="submit"
+        >
+          submit
+        </el-button>
       </el-form-item>
     </el-form>
   </div>

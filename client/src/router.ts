@@ -47,9 +47,7 @@ export const router = VueRouter.createRouter({
 router.beforeEach((to,form,next)=>{
   const user = useUser()
   if(getToken()&&!Object.keys(user.user).length){
-    http.post('/api/auth/msg',).then(res=>{
-      user.fetchUser(res.data)
-    })
+    user.fetchUser()
   }
   next()
 })
