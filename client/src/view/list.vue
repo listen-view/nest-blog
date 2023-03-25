@@ -5,17 +5,14 @@
         v-for="tag in tags"
         :key="tag.id"
         class="tag"
-        :class="routeMsg.query?.tag===tag.content&&'active'"
+        :class="routeMsg.query?.tag === tag.content && 'active'"
         @click="routerIns.push(`/list?tag=${tag.content}`)"
-      >{{ tag.content }}</span>
+        >{{ tag.content || tag.label }}</span
+      >
     </div>
   </div>
   <section>
-    <div
-      v-for="item in bolgList"
-      :key="item.id"
-      class="post"
-    >
+    <div v-for="item in bolgList" :key="item.id" class="post">
       <p>{{ item.author }}</p>
       <router-link :to="`/detail?id=${item.id}`">
         {{ item.title }}
@@ -26,32 +23,39 @@
 </template>
 
 <script lang="ts" setup>
-import axios from 'axios'
-import {onMounted, ref, watchEffect} from 'vue'
-import http from "../http";
-import {useRoute, useRouter} from "vue-router";
+import axios from "axios"
+import { onMounted, ref, watchEffect } from "vue"
+import http from "../http"
+import { useRoute, useRouter } from "vue-router"
 
 const routerIns = useRouter()
 const routeMsg = useRoute()
 const bolgList = ref<any[]>([])
-const tags = ref([])
-const replaceTag = (html:string) => {
-  return html.replace(/<\/?[\s|\S].?>/g,'')
+const tags = ref<any[]>([])
+const replaceTag = (html: string) => {
+  return html.replace(/<\/?[\s|\S].?>/g, "")
 }
 onMounted(() => {
-
-  http.get('/api/tag').then(res=>{
-    if(res.data)tags.value = res.data
+  http.get("/api/tag").then((res) => {
+    if (res.data)
+      tags.value = [
+        {
+          label: "全部",
+          content: ""
+        }
+      ].concat(res.data)
   })
 })
-watchEffect(()=>{
-  http.get('/api/posts',{
-    params:{tag:routeMsg.query?.tag}
-  }).then(res => {
-    if (res.status === 200) {
-      bolgList.value = res.data
-    }
-  })
+watchEffect(() => {
+  http
+    .get("/api/posts", {
+      params: { tag: routeMsg.query?.tag }
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        bolgList.value = res.data
+      }
+    })
 })
 </script>
 

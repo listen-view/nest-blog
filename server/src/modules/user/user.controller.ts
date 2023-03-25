@@ -23,6 +23,12 @@ export class UserController {
     return this.userService.register(createUserDto);
   }
 
+  @Post('update')
+  @UseGuards(AuthGuard('jwt'))
+  update(@Body() body: UpdateUserDto) {
+    return this.userService.update(body.id, body);
+  }
+
   @Get()
   @UseGuards(AuthGuard('jwt'))
   getUserMsg(@Req() req) {

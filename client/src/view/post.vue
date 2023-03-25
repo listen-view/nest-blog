@@ -1,9 +1,6 @@
 <template>
   <div class="form-box">
     <el-form label-width="80">
-      <el-form-item label="author">
-        <el-input v-model:model-value="formData.author" />
-      </el-form-item>
       <el-form-item label="title">
         <el-input v-model:model-value="formData.title" />
       </el-form-item>
@@ -19,9 +16,9 @@
         >
           <el-option
             v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            :key="item.content"
+            :label="item.content"
+            :value="item.content"
           />
         </el-select>
       </el-form-item>
@@ -34,67 +31,66 @@
           />
           <Editor
             v-model="valueHtml"
-            style="height: 500px; overflow-y: hidden;"
-            :default-config="{placeholder:'请输入内容'}"
+            style="height: 500px; overflow-y: hidden"
+            :default-config="{ placeholder: '请输入内容' }"
             mode="default"
             @onCreated="handleCreated"
           />
         </div>
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          @click="postForm"
-        >
-          submit
-        </el-button>
+        <el-button type="primary" @click="postForm"> submit </el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {reactive, shallowRef, ref, onMounted} from "vue";
-import {Toolbar,Editor} from '@wangeditor/editor-for-vue'
-import '@wangeditor/editor/dist/css/style.css'
-import http from "../http";
-import {ElNotification} from "element-plus";
-import {useRouter} from "vue-router";
+import { reactive, shallowRef, ref, onMounted } from "vue"
+import { Toolbar, Editor } from "@wangeditor/editor-for-vue"
+import "@wangeditor/editor/dist/css/style.css"
+import http from "../http"
+import { ElNotification } from "element-plus"
+import { useRouter } from "vue-router"
 const formData = reactive({
-  author:'',
-  Content: '',
-  title: '',
-  tags:[]
+  Content: "",
+  title: "",
+  tags: []
 })
 const router = useRouter()
-const options = ref([])
+const options = ref<Array<{ content: string }>>([])
 // 编辑器实例，必须用 shallowRef
 const editorRef = shallowRef()
 
 // 内容 HTML
-const valueHtml = ref('<p></p>')
+const valueHtml = ref("<p></p>")
 
-onMounted(()=>{
-  http.get('/api/tag').then(res=>{
-    if(res.data){
+onMounted(() => {
+  http.get("/api/tag").then((res) => {
+    if (res.data) {
       options.value = res.data
     }
   })
 })
-const handleCreated = (editor:any) => {
+const handleCreated = (editor: any) => {
   editorRef.value = editor // 记录 editor 实例，重要！
 }
 
-const postForm = ()=>{
-  if(!valueHtml.value)return
-  http.post('/api/posts',Object.assign({},formData,{
-    Content:valueHtml.value
-  })).then(res=>{
-    if(res.status===201){
-      ElNotification.success('发布成功！')
-      router.push('/')
-    }
-  })
+const postForm = () => {
+  if (!valueHtml.value) return
+  http
+    .post(
+      "/api/posts",
+      Object.assign({}, formData, {
+        Content: valueHtml.value
+      })
+    )
+    .then((res) => {
+      if (res.status === 201) {
+        ElNotification.success("发布成功！")
+        router.push("/")
+      }
+    })
 }
 </script>
 

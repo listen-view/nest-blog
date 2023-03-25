@@ -26,6 +26,7 @@ export class PostsService {
     const temp = await this.postRepository.create(createPost);
     temp.user = user;
     temp.tag = existTags;
+    temp.author = userName;
     return await this.postRepository.save(temp);
   }
 

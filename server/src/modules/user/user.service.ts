@@ -41,8 +41,13 @@ export class UserService {
     });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUser: UpdateUserDto) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!user) throw new HttpException('不存在用户', 403);
+
+    return await this.userRepository.save(Object.assign(user, updateUser));
   }
 
   remove(id: number) {
