@@ -1,55 +1,49 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { hashSync } from 'bcryptjs';
-import { Exclude } from 'class-transformer';
-import { Post } from '../../posts/entities/post.entity';
+import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { hashSync } from 'bcryptjs'
+import { Exclude } from 'class-transformer'
+import { Post } from '../../posts/entities/post.entity'
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: number
 
   @Column({ length: 50 })
-  userName: string;
+  userName: string
 
   @Column({ length: 50 })
-  nickName: string;
+  nickName: string
 
   @Column()
-  password: string;
+  password: string
+
+  @Column({ default: '' })
+  avatar: string
 
   @Column()
-  avatar: string;
+  email: string
 
-  @Column()
-  email: string;
-
-  @OneToMany(() => Post, (post) => post.user)
-  post: Post[];
+  @OneToMany(() => Post, post => post.user)
+  post: Post[]
 
   @Column('simple-enum', { enum: ['root', 'author', 'visitor'] })
-  role: string;
+  role: string
 
   @Column({
     type: 'timestamp',
     name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
+    default: () => 'CURRENT_TIMESTAMP'
   })
-  createTime: Date;
+  createTime: Date
 
   @Column({
     type: 'timestamp',
     name: 'update_time',
-    default: () => 'CURRENT_TIMESTAMP',
+    default: () => 'CURRENT_TIMESTAMP'
   })
-  updateTime: Date;
+  updateTime: Date
 
   @BeforeInsert()
   async encryptPwd() {
-    this.password = await hashSync(this.password);
+    this.password = await hashSync(this.password)
   }
 }

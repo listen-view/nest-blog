@@ -1,13 +1,15 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PostsModule } from './modules/posts/posts.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './modules/user/user.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { CommentModule } from './modules/comment/comment.module';
-import { TagModule } from './modules/tag/tag.module';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { PostsModule } from './modules/posts/posts.module'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { UserModule } from './modules/user/user.module'
+import { AuthModule } from './modules/auth/auth.module'
+import { CommentModule } from './modules/comment/comment.module'
+import { TagModule } from './modules/tag/tag.module'
+import { CrosMiddleware } from './middleware/cros'
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -21,17 +23,21 @@ import { TagModule } from './modules/tag/tag.module';
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        synchronize: true,
+        synchronize: true
       }),
-      inject: [ConfigService],
+      inject: [ConfigService]
     }),
     PostsModule,
     UserModule,
     AuthModule,
     CommentModule,
-    TagModule,
+    TagModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CrosMiddleware).forRoutes('*')
+  }
+}
