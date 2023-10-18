@@ -1,6 +1,7 @@
 export class CreatePostDto {
-  title: string;
-  author: string;
-  content: string;
-  tags: string[];
+  title: string
+  author: string
+  content: string
+  tags: string[]
+  cover: string
 }

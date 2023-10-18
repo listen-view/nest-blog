@@ -5,42 +5,45 @@ import {
   ManyToOne,
   JoinTable,
   OneToMany,
-  ManyToMany,
-} from 'typeorm';
-import { User } from '../../user/entities/user.entity';
-import { Comment } from '../../comment/entities/comment.entity';
-import { Tag } from '../../tag/entities/tag.entity';
+  ManyToMany
+} from 'typeorm'
+import { User } from '../../user/entities/user.entity'
+import { Comment } from '../../comment/entities/comment.entity'
+import { Tag } from '../../tag/entities/tag.entity'
 
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column()
-  title: string;
+  title: string
+
+  @Column()
+  cover: string
 
   @Column({ type: 'longtext' })
-  Content: string;
+  content: string
 
   @Column({ type: 'int', default: 0 })
-  readCount: number;
+  readCount: number
 
   @Column()
-  author: string;
+  author: string
 
-  @OneToMany(() => Comment, (comment) => comment.post)
-  comment: Comment[];
+  @OneToMany(() => Comment, comment => comment.post)
+  comment: Comment[]
 
-  @ManyToOne(() => User, (user) => user.post)
-  user: User;
+  @ManyToOne(() => User, user => user.post)
+  user: User
 
-  @ManyToMany(() => Tag, (tag) => tag.post)
+  @ManyToMany(() => Tag, tag => tag.post)
   @JoinTable()
-  tag: Tag[];
+  tag: Tag[]
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createTime: Date;
+  createTime: Date
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updateTime: Date;
+  updateTime: Date
 }
