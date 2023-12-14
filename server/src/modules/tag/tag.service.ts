@@ -3,7 +3,7 @@ import { CreateTagDto } from './dto/create-tag.dto'
 import { UpdateTagDto } from './dto/update-tag.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Tag } from './entities/tag.entity'
-import { Repository } from 'typeorm'
+import { Like, Repository } from 'typeorm'
 
 @Injectable()
 export class TagService {
@@ -32,8 +32,22 @@ export class TagService {
     return await this.tagRepository.save(tagIns)
   }
 
-  async findAll() {
-    return await this.tagRepository.find()
+  async findAll(keyword: string) {
+    const data = await this.tagRepository.find({
+      where: {
+        content: Like(`%${keyword}%`)
+      },
+      relations: {
+        post: true
+      }
+    })
+    return data.map(item => {
+      const { post, ...another } = item
+      return {
+        ...another,
+        postCount: post.length
+      }
+    })
   }
 
   findOne(id: number) {

@@ -8,13 +8,13 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
-} from '@nestjs/common';
-import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+  Req
+} from '@nestjs/common'
+import { PostsService } from './posts.service'
+import { CreatePostDto } from './dto/create-post.dto'
+import { UpdatePostDto } from './dto/update-post.dto'
+import { ApiTags } from '@nestjs/swagger'
+import { AuthGuard } from '@nestjs/passport'
 
 @ApiTags('tags')
 @Controller('posts')
@@ -24,27 +24,36 @@ export class PostsController {
   @Post()
   @UseGuards(AuthGuard('jwt'))
   create(@Req() req, @Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(req.user?.userName, createPostDto);
+    return this.postsService.create(req.user?.userName, createPostDto)
   }
 
   @Get()
   findAll(@Query('tag') tag) {
-    return this.postsService.findAll(tag);
+    return this.postsService.findAll(tag)
+  }
+
+  @Get('/hot')
+  findTop5(@Query('tag') tag: string) {
+    return this.postsService.findTop5(tag)
+  }
+
+  @Get('/view')
+  increaseReadCount(@Query('id') id: number) {
+    return this.postsService.increaseReadCount(id)
   }
 
   @Get('detail')
   async findOne(@Query('id') id) {
-    console.log(id);
-    return await this.postsService.findOne(id);
+    return await this.postsService.findOne(id)
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+    return this.postsService.update(+id, updatePostDto)
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+    return this.postsService.remove(+id)
   }
 }

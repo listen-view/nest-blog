@@ -47,10 +47,31 @@ export class PostsService {
     return await query.getMany()
   }
 
+  async findTop5(tag: string) {
+    const query = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.tag', 'tag')
+      .where('tag.content = :tag', { tag })
+      .orderBy('post.readCount', 'DESC')
+      .take(5)
+      .getMany()
+
+    return query
+  }
+
+  async increaseReadCount(id: number) {
+    const query = await this.postRepository.findOne({
+      where: { id }
+    })
+    query.readCount += 1
+    return await this.postRepository.update(id, query)
+  }
+
   async findOne(id) {
     return await this.postRepository.findOne({
       where: { id },
       relations: {
+        tag: true,
         comment: true
       }
     })
